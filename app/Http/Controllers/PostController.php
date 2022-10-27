@@ -17,11 +17,14 @@ use App\Models\Comment;
 
 class PostController extends Controller
 {
-    public function list(Request $request) {
+    // Show a list of post previews.
+    // Filter list by author name substring.
+    // If author name filter not provided, return all posts.
+    public function index(Request $request) {
 
         $author = $request->query('author');
 
-        // Case-insensitive string matching
+        // Case-*sensitive* string matching
         $results = $author
             ? Post::where('author_name', 'like', "%$author%")->get()
             : Post::all();
@@ -44,7 +47,9 @@ class PostController extends Controller
         ]);
     }
 
-    public function one_post_page($id) {
+    // Show all content for a post, and all comments on this post.
+    // Show a link to edit the post, and a form to add a comment.
+    public function show($id) {
 
         $post = Post::findOrFail($id);
 
@@ -65,13 +70,15 @@ class PostController extends Controller
         ]);
     }
 
-    public function create_form() {
+    // Show a form for creating a new post.
+    public function create() {
         return view('posts.create', [
             'form_action' => '/posts'
         ]);
     }
 
-    public function create(StorePostRequest $request) {
+    // Store a new post, then redirect to the new post's page.
+    public function store(StorePostRequest $request) {
 
         $validated = $request->validated();
 
@@ -86,7 +93,20 @@ class PostController extends Controller
         return redirect("/posts/$new_post_id");
     }
 
-    public function edit(StorePostRequest $request, $id) {
+    // Show a form for editing a post.
+    public function edit($id) {
+        $post = Post::find($id);
+
+        return view('posts.edit', [
+            'post' => $post,
+            'edit_form_action' => "/posts/$id",
+            'delete_form_action' => "/posts/$id",
+            'cancel_redirect' => "/posts/$id",
+        ]);
+    }
+
+    // Update/edit a post, then redirect to the new post's page.
+    public function update(StorePostRequest $request, $id) {
 
         $validated = $request->validated();
 
@@ -102,6 +122,7 @@ class PostController extends Controller
         return redirect("/posts/$id");
     }
 
+    // Delete a post, then show a delete confirmation page.
     public function delete($id) {
         $post = Post::find($id);
         $post->delete();
@@ -112,22 +133,19 @@ class PostController extends Controller
         ]);
     }
 
-    public function edit_post_page($id) {
-        $post = Post::find($id);
+    //
+    // Comments
+    //
 
-        return view('posts.edit', [
-            'post' => $post,
-            'edit_form_action' => "/posts/$id",
-            'delete_form_action' => "/posts/$id",
-            'cancel_redirect' => "/posts/$id",
-        ]);
-    }
+    public function comments_index($post_id) {
+        // Post comments don't get their own page.
+        // Redirect to the page for the post they belong to.
+        // All comments will be shown on that page.
 
-    public function comments($post_id) {
         return redirect("/posts/$post_id");
     }
 
-    public function add_comment(StoreCommentRequest $request, $post_id) {
+    public function comments_store(StoreCommentRequest $request, $post_id) {
 
         $validated = $request->validated();
 
@@ -137,8 +155,6 @@ class PostController extends Controller
         $comment->post()->associate($post);
         $comment->text = $validated['text'];
         $comment->save();
-
-        // Did it work?
 
         return redirect("/posts/$post_id");
     }
