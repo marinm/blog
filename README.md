@@ -81,7 +81,8 @@ blog
 |-- app
 |   |-- Http
 |   |   |-- Controllers
-|   |       +-- PostController.php
+|   |       |-- PostController.php
+|   |       +-- CommentController.php
 |   |   +-- Requests
 |   |       |-- StoreCommentRequest.php
 |   |       +-- StorePostRequest.php

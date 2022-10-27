@@ -13,31 +13,30 @@ class CommentController extends Controller
      * List all comments for a post.
      * (Redirect to the post's page where all comments are shown.)
      *
-     * @param  int  $post_id
+     * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function index($post_id)
+    public function index($post)
     {
-        return redirect("/posts/$post_id");
+        return redirect("/posts/$post->id");
     }
 
     /**
      * Store a new comment.
      *
      * @param  \App\Http\Requests\StoreCommentRequest  $request
+     * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreCommentRequest $request, $post_id)
+    public function store(StoreCommentRequest $request, Post $post)
     {
         $validated = $request->validated();
-
-        $post = Post::find($post_id);
 
         $comment = new Comment();
         $comment->post()->associate($post);
         $comment->text = $validated['text'];
         $comment->save();
 
-        return redirect("/posts/$post_id");
+        return redirect("/posts/$post->id");
     }
 }
