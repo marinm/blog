@@ -1,5 +1,16 @@
 # Laravel Blog
 
+**Note:** I am making incremental improvements to the code.
+
+For the original Wednesday submission, please see:
+
+```
+git checkout ec3b7a31
+```
+
+_...where "~~Tuesday~~ commmit" should say Wednesday instead._
+
+
 ## Development setup
 
 You will need:
