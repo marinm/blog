@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->text('title')->nullable(false);
             $table->text('author_name')->nullable(false);
-            $table->binary('image')->nullable();
+            $table->text('image_path')->nullable();
             $table->text('body')->nullable();
             $table->timestamps();
         });

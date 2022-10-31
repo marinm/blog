@@ -2,47 +2,62 @@
 
 @section('body')
 
-<div id="content-container">
-
 <h1>Edit post</h1>
 
-<form id="update-form" method="POST" action="{{ $edit_form_action }}">
+<form
+    method="POST"
+    action="{{ $edit_form_action }}"
+    id="update-form"
+    enctype="multipart/form-data"
+    class="mt-4 d-grid gap-3"
+    >
+
     @method('PUT')
     @csrf
+
+    @if ($errors->any())
+    <div class="alert alert-danger pb-0">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
     <input
         type="text"
         id="title"
         name="title"
         placeholder="Title"
-        value="{{ $errors->any() ? old('title') : $post->title }}"
-        class="rounded-corners"
+        class="form-control @error('title') is-invalid @enderror"
+        value="{{ $errors->any() ? old('title') : $post['title'] }}"
         >
-    @error('title')
-        <div class="form-input-error">{{ $message }}</div>
-    @enderror
 
     <input
         type="text"
-        id="author-name"
+        id="author_name"
         name="author_name"
         placeholder="Author name"
-        value="{{ $errors->any() ? old('author_name') : $post->author_name }}"
-        class="rounded-corners mt-1"
+        class="form-control @error('author_name') is-invalid @enderror"
+        value="{{ $errors->any() ? old('author_name') : $post['author_name'] }}"
         >
-    @error('author_name')
-        <div class="form-input-error">{{ $message }}</div>
-    @enderror
+
+    <div class="row">
+        @if ($post['image_url_path'])
+        <img src="{{ $post['image_url_path'] }}" class="w-100">
+        @endif
+    </div>
+
+    <input type="file" accept="image/*" name="image">
 
     <textarea
         id="body"
         name="body"
-        placeholder="Start typing..."
-        class="mt-1"
-        >{{ $errors->any() ? old('title') : $post->body }}</textarea>
-    @error('body')
-        <div class="form-input-error">{{ $message }}</div>
-    @enderror
+        class="form-control"
+        placeholder="Start typing"
+        style="height: 20em"
+        >{{ $errors->any() ? old('body') : $post['body'] }}</textarea>
 
 </form>
 
@@ -51,13 +66,16 @@
     @csrf
 </form>
 
-<div class="btn-row flex-between">
-    <a class="btn btn-gray" href="{{ $cancel_redirect }}">Cancel</a>
-    <input form="delete-form" type="submit" value="Delete" class="btn btn-red">
-    <input form="update-form" type="submit" value="Update" class="btn btn-blue">
-</div>
+<div class="row mt-5">
 
+    <div class="col justify-content-start">
+        <input form="delete-form" type="submit" value="Delete" class="btn btn-outline-danger">
+    </div>
 
+    <div class="col text-end">
+        <a class="btn btn-outline-secondary" href="{{ $cancel_redirect }}">Cancel</a>
+        <input form="update-form" type="submit" value="Update" class="btn btn-primary">
+    </div>
 
 </div>
 

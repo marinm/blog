@@ -2,9 +2,35 @@
 
 namespace App\Repositories;
 use App\Models\Post;
+use Illuminate\Support\Facades\Storage;
 
 class PostRepository
 {
+    /**
+     * Don't expose the ORM Model instance. Return only a dict of data.
+     * Also add some fields.
+     *
+     * @param  App\Models\Post  $post
+     * @return array
+     */
+    public function as_dict($post) {
+
+        $image_path = $post->image_path
+            ? Storage::url($post->image_path)
+            : null;
+
+        return [
+            'id'             => $post->id,
+            'title'          => $post->title,
+            'author_name'    => $post->author_name,
+            'body'           => $post->body,
+            'image_path'     => $post->image_path,
+            'image_url_path' => $image_path,
+            'created_at'     => $post->created_at,
+            'updated_at'     => $post->updated_at,
+        ];
+    }
+
     /**
      * Get all posts.
      *
@@ -12,7 +38,7 @@ class PostRepository
      */
     public function all()
     {
-        return Post::all();
+        return Post::all()->map([$this, 'as_dict']);
     }
 
     /**
@@ -23,7 +49,7 @@ class PostRepository
      */
     public function find($id)
     {
-        return Post::findOrFail($id);
+        return $this->as_dict( Post::findOrFail($id) );
     }
 
     /**
@@ -34,7 +60,20 @@ class PostRepository
      */
     public function create($details)
     {
-        return Post::create($details);
+        $image_file = $details['image'];
+        $image_path = null;
+        if ($image_file) {
+            $image_path = $image_file->store('posts/images', 'public');
+        }
+
+        $post = Post::create([
+            'title'       => $details['title'],
+            'author_name' => $details['author_name'],
+            'image_path'  => $image_path,
+            'body'        => $details['body']
+        ]);
+
+        return $this->as_dict($post);
     }
 
     /**
@@ -48,14 +87,21 @@ class PostRepository
     {
         $post = Post::findOrFail($id);
 
+        $image_file = $details['image'];
+        $image_path = null;
+        if ($image_file) {
+            $image_path = $image_file->store('posts/images', 'public');
+        }
+
         $post->fill([
-            'title' => $details['title'],
+            'title'       => $details['title'],
             'author_name' => $details['author_name'],
-            'body' => $details['body']
+            'image_path'  => $image_path,
+            'body'        => $details['body']
         ]);
         $post->save();
 
-        return $post;
+        return $this->as_dict($post);
     }
 
     /**

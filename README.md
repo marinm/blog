@@ -112,7 +112,6 @@ blog
 |       |-- layouts
 |       |   +-- app.blade.php
 |       +-- posts
-|           |-- confirm-delete-success.blade.php
 |           |-- create.blade.php
 |           |-- edit.blade.php
 |           |-- index.blade.php

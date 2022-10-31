@@ -1,52 +1,68 @@
 @extends('layouts.app')
 
 @section('body')
-<div id="content-container">
 
-    <h1>Create a new post</h1>
+<h1>Create a new post</h1>
 
-    <form method="POST" action="{{ $form_action }}" id="create-post-form">
-        @method('POST')
-        @csrf
+<form
+    method="POST"
+    action="{{ $form_action }}"
+    id="create-post-form"
+    enctype="multipart/form-data"
+    class="mt-4 d-grid gap-3"
+    >
 
-        <input
-            type="text"
-            id="title"
-            name="title"
-            placeholder="Title"
-            value="{{ $errors->any() ? old('title') : null }}"
-            class="rounded-corners"
-            >
-        @error('title')
-            <div class="form-input-error">{{ $message }}</div>
-        @enderror
+    @method('POST')
+    @csrf
 
-        <input
-            type="text"
-            id="author-name"
-            name="author_name"
-            placeholder="Author name"
-            value="{{ $errors->any() ? old('author_name') : null }}"
-            class="rounded-corners mt-1"
-            >
-        @error('author_name')
-            <div class="form-input-error">{{ $message }}</div>
-        @enderror
+    @if ($errors->any())
+    <div class="alert alert-danger pb-0">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
-        <textarea
-            id="body"
-            name="body"
-            placeholder="Start typing..."
-            class="mt-1"
-            >{{ $errors->any() ? old('title') : '' }}</textarea>
-        @error('body')
-            <div class="form-input-error">{{ $message }}</div>
-        @enderror
+    <input
+        type="text"
+        id="title"
+        name="title"
+        placeholder="Title"
+        class="form-control @error('title') is-invalid @enderror"
+        value="{{ $errors->any() ? old('title') : '' }}"
+        >
 
-        <div class="flex-right mt-1">
-            <input type="submit" value="Create" class="btn btn-blue">
+    <input
+        type="text"
+        id="author_name"
+        name="author_name"
+        placeholder="Author name"
+        class="form-control @error('author_name') is-invalid @enderror"
+        value="{{ $errors->any() ? old('author_name') : '' }}"
+        >
+
+    <input type="file" accept="image/*" name="image">
+
+    <textarea
+        id="body"
+        name="body"
+        class="form-control"
+        placeholder="Start typing"
+        style="height: 20em"
+        >{{ old('body') }}</textarea>
+
+    <div class="row">
+        <div class="col">
+            <a href="/posts" class="btn btn-outline-secondary">Cancel</a>
         </div>
-    </form>
+        <div class="col text-end">
+            <input type="submit" value="Create" class="btn btn-primary">
+        </div>
+    </div>
 
-</div>
+</form>
+
+
 @endsection

@@ -6,18 +6,28 @@
 
         <title>Blog</title>
 
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+            rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+            crossorigin="anonymous"
+            >
+
         @vite(['resources/css/app.css'])
     </head>
     <body>
 
-        <div id="site-header">
-            <a href="/" class="nav">Home</a>
-            <a href="/posts/create" class="btn btn-blue">New Post</a>
+        <div class="navbar container-lg shadow p-3 mb-5 bg-white rounded">
+            <div class="container-lg">
+                <a class="navbar-brand" href="/">Home</a>
+                <a href="/posts/create" class="btn btn-primary">New Post</a>
+            </div>
         </div>
 
-        @section('body')
-        The page did not load
-        @show
+        <div id="content-container" class="container-sm">
+            @section('body')
+            The content did not load
+            @show
+        </div>
 
     </body>
 </html>

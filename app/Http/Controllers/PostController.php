@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Repositories\PostRepository;
+use App\Repositories\CommentRepository;
 use App\Http\Requests\StorePostRequest;
 
 class PostController extends Controller
@@ -13,15 +14,20 @@ class PostController extends Controller
     const DATE_FORMAT = 'M. j, Y';
 
     private PostRepository $postRepository;
+    private CommentRepository $commentRepository;
 
     /**
      * Constructor
      *
      * @param  App\Repositories\PostRepository $postRepository
      */
-    public function __construct(postRepository $postRepository)
+    public function __construct(
+        PostRepository $postRepository,
+        CommentRepository $commentRepository
+    )
     {
         $this->postRepository = $postRepository;
+        $this->commentRepository = $commentRepository;
     }
 
     /**
@@ -46,17 +52,19 @@ class PostController extends Controller
         $previews = $results
             ->sortByDesc('created_at')
             ->map(function ($post) {
+                $id = $post['id'];
                 return [
-                    'url' => "/posts/$post->id",
-                    'title' => $post->title,
-                    'posted_at' => date(self::DATE_FORMAT, $post->created_at->timestamp),
-                    'author_name' => $post->author_name,
-                    'body_preview' => Str::limit($post->body, self::BODY_PREVIEW_CHAR_LIMIT),
+                    'url'            => "/posts/$id",
+                    'title'          => $post['title'],
+                    'image_url_path' => $post['image_url_path'],
+                    'posted_at'      => date(self::DATE_FORMAT, $post['created_at']->timestamp),
+                    'author_name'    => $post['author_name'],
+                    'body_preview'   => Str::limit($post['body'], self::BODY_PREVIEW_CHAR_LIMIT),
                 ];
             });
 
         return view('posts.index', [
-            'posts' => $previews,
+            'posts'       => $previews,
             'search_term' => $author
         ]);
     }
@@ -84,12 +92,15 @@ class PostController extends Controller
         $validated = $request->validated();
 
         $post = $this->postRepository->create([
-            'title' => $validated['title'],
+            'title'       => $validated['title'],
             'author_name' => $validated['author_name'],
-            'body' => $validated['body']
+            'image'       => $validated['image'],
+            'body'        => $validated['body']
         ]);
 
-        return redirect("/posts/$post->id");
+        $id = $post['id'];
+
+        return redirect("/posts/$id");
     }
 
     /**
@@ -103,20 +114,24 @@ class PostController extends Controller
     {
         $post = $this->postRepository->find($id);
 
-        $post->posted_at = date(self::DATE_FORMAT, $post->created_at->timestamp);
+        $comments = $this->commentRepository
+            ->belongingToPost($id)
+            ->map(function ($comment) {
+                return [
+                    'text'      => $comment['text'],
+                    'posted_at' => date(self::DATE_FORMAT, $comment->created_at->timestamp),
+                ];
+            });
 
-        $comments = $post->comments->map(function ($comment) {
-            return [
-                'text' => $comment['text'],
-                'posted_at' => date(self::DATE_FORMAT, $comment->created_at->timestamp),
-            ];
-        });
+        $post_details = $post;
+        $post_details['comments'] = $comments;
+        $post_details['posted_at'] = date(self::DATE_FORMAT, $post['created_at']->timestamp);
 
-        return view('posts.post', [
-            'post' => $post,
-            'comments' => $comments,
-            'edit_post_page' => "/posts/$post->id/edit",
-            'new_comment_form_action' => "/posts/$post->id/comments"
+        return view('posts.show', [
+            'post'                    => $post_details,
+            'comments'                => $comments,
+            'edit_post_page'          => "/posts/$id/edit",
+            'new_comment_form_action' => "/posts/$id/comments"
         ]);
     }
 
@@ -131,10 +146,10 @@ class PostController extends Controller
         $post = $this->postRepository->find($id);
 
         return view('posts.edit', [
-            'post' => $post,
-            'edit_form_action' => "/posts/$post->id",
-            'delete_form_action' => "/posts/$post->id",
-            'cancel_redirect' => "/posts/$post->id",
+            'post'               => $post,
+            'edit_form_action'   => "/posts/$id",
+            'delete_form_action' => "/posts/$id",
+            'cancel_redirect'    => "/posts/$id",
         ]);
     }
 
@@ -151,8 +166,8 @@ class PostController extends Controller
 
         // Since all fields are editable, use the same request format as 'create'.
         $validated = $request->validated();
-        $this->postRepository->update($post->id, $validated);
-        return redirect("/posts/$post->id");
+        $this->postRepository->update($post['id'], $validated);
+        return redirect("/posts/$id");
     }
 
     /**
@@ -165,9 +180,6 @@ class PostController extends Controller
     {
         $this->postRepository->delete($id);
 
-        return view('posts.confirm-delete-success', [
-            'suggest_text' => 'Back to all posts',
-            'suggested_redirect_path' => '/posts'
-        ]);
+        return redirect('/posts');
     }
 }
