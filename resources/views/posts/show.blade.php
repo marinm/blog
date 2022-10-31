@@ -16,9 +16,7 @@
     <img src="{{ $post['image_url_path'] }}" class="img-fluid">
 </div>
 
-<div class="text">
-    {{ $post['body'] }}
-</div>
+<div class="text" style="white-space: pre-wrap">{{ $post['body'] }}</div>
 
 <div class="row text-center py-4 mb-4 border-bottom">
     <a href="{{ $edit_post_page }}" class="blue">Edit</a>
