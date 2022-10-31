@@ -4,13 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Repositories\PostRepository;
 use App\Http\Requests\StorePostRequest;
-use App\Models\Post;
 
 class PostController extends Controller
 {
     const BODY_PREVIEW_CHAR_LIMIT = 130;
     const DATE_FORMAT = 'M. j, Y';
+
+    private PostRepository $postRepository;
+
+    /**
+     * Constructor
+     *
+     * @param  App\Repositories\PostRepository $postRepository
+     */
+    public function __construct(postRepository $postRepository)
+    {
+        $this->postRepository = $postRepository;
+    }
 
     /**
      * List all posts.
@@ -27,8 +39,8 @@ class PostController extends Controller
 
         // Case-sensitive string matching
         $results = $author
-            ? Post::where('author_name', 'like', "%$author%")->get()
-            : Post::all();
+            ? $this->postRepository->whereAuthorNameMatches($author)
+            : $this->postRepository->all();
 
         // Newest posts first
         $previews = $results
@@ -71,26 +83,26 @@ class PostController extends Controller
     {
         $validated = $request->validated();
 
-        $post = Post::create([
+        $post = $this->postRepository->create([
             'title' => $validated['title'],
             'author_name' => $validated['author_name'],
             'body' => $validated['body']
         ]);
 
-        $new_post_id = $post->id;
-
-        return redirect("/posts/$new_post_id");
+        return redirect("/posts/$post->id");
     }
 
     /**
      * Show an entire post and an 'edit' link.
      * Also show all comments on that post, with an 'Add comment' form.
      *
-     * @param  \App\Models\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($id)
     {
+        $post = $this->postRepository->find($id);
+
         $post->posted_at = date(self::DATE_FORMAT, $post->created_at->timestamp);
 
         $comments = $post->comments->map(function ($comment) {
@@ -111,11 +123,13 @@ class PostController extends Controller
     /**
      * Show the form for editing the post.
      *
-     * @param  \App\Models\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit($id)
     {
+        $post = $this->postRepository->find($id);
+
         return view('posts.edit', [
             'post' => $post,
             'edit_form_action' => "/posts/$post->id",
@@ -128,34 +142,28 @@ class PostController extends Controller
      * Update/edit a post.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(StorePostRequest $request, Post $post)
+    public function update(StorePostRequest $request, $id)
     {
+        $post = $this->postRepository->find($id);
+
         // Since all fields are editable, use the same request format as 'create'.
-
         $validated = $request->validated();
-
-        $post->fill([
-            'title' => $validated['title'],
-            'author_name' => $validated['author_name'],
-            'body' => $validated['body']
-        ]);
-        $post->save();
-
+        $this->postRepository->update($post->id, $validated);
         return redirect("/posts/$post->id");
     }
 
     /**
      * Delete a post and all of its comments.
      *
-     * @param  \App\Models\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        $post->delete();
+        $this->postRepository->delete($id);
 
         return view('posts.confirm-delete-success', [
             'suggest_text' => 'Back to all posts',

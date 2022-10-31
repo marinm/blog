@@ -81,14 +81,17 @@ blog
 |-- app
 |   |-- Http
 |   |   |-- Controllers
-|   |       |-- PostController.php
-|   |       +-- CommentController.php
+|   |   |   |-- PostController.php
+|   |   |   +-- CommentController.php
 |   |   +-- Requests
 |   |       |-- StoreCommentRequest.php
 |   |       +-- StorePostRequest.php
-|   +-- Models
-|       |-- Comment.php
-|       +-- Post.php
+|   |-- Models
+|   |   |-- Comment.php
+|   |   +-- Post.php
+|   +-- Repositories
+|       |-- CommentRepository.php
+|       +-- PostRepository.php
 |-- database
 |   |-- factories
 |   |   |-- CommentFactory.php

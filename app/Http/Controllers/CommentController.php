@@ -3,40 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentRequest;
-use App\Http\Requests\UpdateCommentRequest;
-use App\Models\Post;
+use App\Repositories\CommentRepository;
 use App\Models\Comment;
 
 class CommentController extends Controller
 {
+    protected $commentRepository;
+
+    /**
+     * Constructor
+     *
+     * @param  App\Repositories\CommentRepository $commentRepository
+     */
+    public function __construct(CommentRepository $commentRepository)
+    {
+        $this->commentRepository = $commentRepository;
+    }
+
     /**
      * List all comments for a post.
      * (Redirect to the post's page where all comments are shown.)
      *
-     * @param  \App\Models\Post  $post
+     * @param  int  $post_id
      * @return \Illuminate\Http\Response
      */
-    public function index($post)
+    public function index($post_id)
     {
-        return redirect("/posts/$post->id");
+        return redirect("/posts/$post_id");
     }
 
     /**
      * Store a new comment.
      *
      * @param  \App\Http\Requests\StoreCommentRequest  $request
-     * @param  \App\Models\Post  $post
+     * @param  int  $post_id
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreCommentRequest $request, Post $post)
+    public function store(StoreCommentRequest $request, $post_id)
     {
         $validated = $request->validated();
 
-        $comment = new Comment();
-        $comment->post()->associate($post);
-        $comment->text = $validated['text'];
-        $comment->save();
+        $this->commentRepository->create($post_id, $validated);
 
-        return redirect("/posts/$post->id");
+        return redirect("/posts/$post_id");
     }
 }
