@@ -14,7 +14,7 @@ class PostFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'author_name' => $this->faker->name(),
-            'image' => null,
+            'image_path' => null,
             'body' => implode("\n\n", $this->faker->paragraphs(3)),
         ];
     }
