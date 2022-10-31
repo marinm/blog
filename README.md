@@ -76,6 +76,8 @@ The site should now be live at `http://localhost`.
 
 ## Code
 
+Where to look for the code I wrote.
+
 ```
 blog
 |-- app
