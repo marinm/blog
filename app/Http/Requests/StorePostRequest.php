@@ -45,7 +45,7 @@ class StorePostRequest extends FormRequest
 
         return [
             'title'       => 'required|max:255',
-            'author_name' => 'required|max:255',
+            'author_name' => 'required|max:100',
             'image'       => ['nullable', $image_rule],
             'body'        => 'nullable',
         ];

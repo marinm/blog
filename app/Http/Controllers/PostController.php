@@ -17,6 +17,19 @@ class PostController extends Controller
     private CommentRepository $commentRepository;
 
     /**
+     * Sanitizer: StorePostRequest author_name
+     *
+     * @param  string  $input
+     * @param  App\Repositories\PostRepository $postRepository
+     */
+    private function sanitizeAuthorName($input) {
+        // Assumes the input has already been validated
+        $sanitized = trim($input);
+        $sanitized = ucfirst($sanitized);
+        return $sanitized;
+    }
+
+    /**
      * Constructor
      *
      * @param  App\Repositories\PostRepository $postRepository
@@ -94,7 +107,7 @@ class PostController extends Controller
 
         $post = $this->postRepository->create([
             'title'       => $validated['title'],
-            'author_name' => $validated['author_name'],
+            'author_name' => $this->sanitizeAuthorName($validated['author_name']),
             'image'       => $validated['image'] ?? null,
             'body'        => $validated['body']
         ]);
