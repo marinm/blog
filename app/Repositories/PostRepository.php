@@ -87,7 +87,7 @@ class PostRepository
     {
         $post = Post::findOrFail($id);
 
-        $image_file = $details['image'];
+        $image_file = $details['image'] ?? null;
         $image_path = null;
         if ($image_file) {
             $image_path = $image_file->store('posts/images', 'public');

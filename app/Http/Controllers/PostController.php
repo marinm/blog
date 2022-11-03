@@ -64,8 +64,9 @@ class PostController extends Controller
             });
 
         return view('posts.index', [
-            'posts'       => $previews,
-            'search_term' => $author
+            'session'      => $request->session()->all(),
+            'posts'        => $previews,
+            'search_term'  => $author
         ]);
     }
 
@@ -94,9 +95,11 @@ class PostController extends Controller
         $post = $this->postRepository->create([
             'title'       => $validated['title'],
             'author_name' => $validated['author_name'],
-            'image'       => $validated['image'],
+            'image'       => $validated['image'] ?? null,
             'body'        => $validated['body']
         ]);
+
+        $request->session()->flash('confirm_created', true);
 
         $id = $post['id'];
 
@@ -107,10 +110,11 @@ class PostController extends Controller
      * Show an entire post and an 'edit' link.
      * Also show all comments on that post, with an 'Add comment' form.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $post = $this->postRepository->find($id);
 
@@ -128,6 +132,7 @@ class PostController extends Controller
         $post_details['posted_at'] = date(self::DATE_FORMAT, $post['created_at']->timestamp);
 
         return view('posts.show', [
+            'session'                 => $request->session()->all(),
             'post'                    => $post_details,
             'comments'                => $comments,
             'edit_post_page'          => "/posts/$id/edit",
@@ -167,18 +172,25 @@ class PostController extends Controller
         // Since all fields are editable, use the same request format as 'create'.
         $validated = $request->validated();
         $this->postRepository->update($post['id'], $validated);
+        $request->session()->flash('confirm_edited', true);
         return redirect("/posts/$id");
     }
 
     /**
      * Delete a post and all of its comments.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $this->postRepository->delete($id);
+
+        // TODO:
+        // Catch errors
+
+        $request->session()->flash('confirm_deleted', true);
 
         return redirect('/posts');
     }

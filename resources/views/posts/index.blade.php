@@ -2,6 +2,15 @@
 
 @section('body')
 
+@isset ($session['confirm_deleted'])
+<div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+  Post deleted
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endisset
+
+
+
 <form method="GET">
     <div class="input-group mb-3">
         <input

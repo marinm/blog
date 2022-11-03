@@ -2,6 +2,21 @@
 
 @section('body')
 
+@isset ($session['confirm_edited'])
+<div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+  Post edited
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endisset
+
+@isset ($session['confirm_created'])
+<div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+  New post created
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endisset
+
+
 <div class="row mb-3">
     <a href="/posts" class="blue">Back</a>
 </div>

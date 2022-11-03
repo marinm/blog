@@ -25,23 +25,29 @@
     </div>
     @endif
 
-    <input
-        type="text"
-        id="title"
-        name="title"
-        placeholder="Title"
-        class="form-control @error('title') is-invalid @enderror"
-        value="{{ $errors->any() ? old('title') : $post['title'] }}"
-        >
+    <div class="form-floating">
+        <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Title"
+            class="form-control @error('title') is-invalid @enderror"
+            value="{{ $errors->any() ? old('title') : $post['title'] }}"
+            >
+        <label for="title">Title</label>
+    </div>
 
-    <input
-        type="text"
-        id="author_name"
-        name="author_name"
-        placeholder="Author name"
-        class="form-control @error('author_name') is-invalid @enderror"
-        value="{{ $errors->any() ? old('author_name') : $post['author_name'] }}"
-        >
+    <div class="form-floating">
+        <input
+            type="text"
+            id="author_name"
+            name="author_name"
+            placeholder="Author name"
+            class="form-control @error('author_name') is-invalid @enderror"
+            value="{{ $errors->any() ? old('author_name') : $post['author_name'] }}"
+            >
+        <label for="author_name">Author name</label>
+    </div>
 
     <div class="row">
         @if ($post['image_url_path'])
@@ -51,13 +57,16 @@
 
     <input type="file" accept="image/*" name="image">
 
-    <textarea
-        id="body"
-        name="body"
-        class="form-control"
-        placeholder="Start typing"
-        style="height: 20em"
-        >{{ $errors->any() ? old('body') : $post['body'] }}</textarea>
+    <div class="form-floating">
+        <textarea
+            id="body"
+            name="body"
+            class="form-control"
+            placeholder="Start typing"
+            style="height: 20em"
+            >{{ $errors->any() ? old('body') : $post['body'] }}</textarea>
+        <label for="body">Post</label>
+    </div>
 
 </form>
 
