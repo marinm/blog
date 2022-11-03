@@ -11,7 +11,8 @@ class CommentRepository
      * @param  int  $post_id
      * @return Illuminate\Database\Eloquent\Collection
      */
-    public function belongingToPost($post_id) {
+    public function belongingToPost($post_id)
+    {
         return Comment::where('post_id', $post_id)->get();
     }
 
@@ -21,7 +22,8 @@ class CommentRepository
      * @param  int  $post_id
      * @return Illuminate\Database\Eloquent\Collection
      */
-    public function create($post_id, $details) {
+    public function create($post_id, $details)
+    {
         $comment = new Comment();
         $comment->post()->associate($post_id);
         $comment->text = $details['text'];

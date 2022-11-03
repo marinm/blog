@@ -55,7 +55,7 @@
 
     <div class="row">
         <div class="col">
-            <a href="/posts" class="btn btn-outline-secondary">Cancel</a>
+            <a href="{{ route('posts.index') }}" class="btn btn-outline-secondary">Cancel</a>
         </div>
         <div class="col text-end">
             <input type="submit" value="Create" class="btn btn-primary">

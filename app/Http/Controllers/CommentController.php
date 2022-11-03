@@ -29,7 +29,7 @@ class CommentController extends Controller
      */
     public function index($post_id)
     {
-        return redirect("/posts/$post_id");
+        return redirect()->route('posts.show', ['post' => $post_id]);
     }
 
     /**
@@ -45,6 +45,6 @@ class CommentController extends Controller
 
         $this->commentRepository->create($post_id, $validated);
 
-        return redirect("/posts/$post_id");
+        return redirect()->route('posts.show', ['post' => $post_id]);
     }
 }

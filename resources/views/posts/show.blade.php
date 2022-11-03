@@ -18,7 +18,7 @@
 
 
 <div class="row mb-3">
-    <a href="/posts" class="blue">Back</a>
+    <a href="{{ route('posts.index') }}" class="blue">Back</a>
 </div>
 
 <h1>{{ $post['title'] }}</h1>

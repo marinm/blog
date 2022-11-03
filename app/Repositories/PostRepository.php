@@ -13,7 +13,8 @@ class PostRepository
      * @param  App\Models\Post  $post
      * @return array
      */
-    public function as_dict($post) {
+    public function as_dict($post)
+    {
 
         $image_path = $post->image_path
             ? Storage::url($post->image_path)

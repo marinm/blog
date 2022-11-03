@@ -25,7 +25,7 @@
         <div class="navbar container-lg shadow p-3 mb-5 bg-white rounded">
             <div class="container-lg">
                 <a class="navbar-brand" href="/">Home</a>
-                <a href="/posts/create" class="btn btn-primary">New Post</a>
+                <a href="{{ route('posts.create') }}" class="btn btn-primary">New Post</a>
             </div>
         </div>
 

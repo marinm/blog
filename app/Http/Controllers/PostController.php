@@ -54,7 +54,7 @@ class PostController extends Controller
             ->map(function ($post) {
                 $id = $post['id'];
                 return [
-                    'url'            => "/posts/$id",
+                    'url'            => route('posts.show', ['post' => $id]),
                     'title'          => $post['title'],
                     'image_url_path' => $post['image_url_path'],
                     'posted_at'      => date(self::DATE_FORMAT, $post['created_at']->timestamp),
@@ -78,7 +78,7 @@ class PostController extends Controller
     public function create()
     {
         return view('posts.create', [
-            'form_action' => '/posts'
+            'form_action' => route('posts.store')
         ]);
     }
 
@@ -103,7 +103,7 @@ class PostController extends Controller
 
         $id = $post['id'];
 
-        return redirect("/posts/$id");
+        return redirect()->route('posts.show', ['post' => $id]);
     }
 
     /**
@@ -135,8 +135,8 @@ class PostController extends Controller
             'session'                 => $request->session()->all(),
             'post'                    => $post_details,
             'comments'                => $comments,
-            'edit_post_page'          => "/posts/$id/edit",
-            'new_comment_form_action' => "/posts/$id/comments"
+            'edit_post_page'          => route('posts.edit', ['post' => $id]),
+            'new_comment_form_action' => route('posts.comments.store', ['post' => $id])
         ]);
     }
 
@@ -152,9 +152,9 @@ class PostController extends Controller
 
         return view('posts.edit', [
             'post'               => $post,
-            'edit_form_action'   => "/posts/$id",
-            'delete_form_action' => "/posts/$id",
-            'cancel_redirect'    => "/posts/$id",
+            'edit_form_action'   => route('posts.update', ['post' => $id]),
+            'delete_form_action' => route('posts.destroy', ['post' => $id]),
+            'cancel_redirect'    => route('posts.show', ['post' => $id])
         ]);
     }
 
@@ -173,7 +173,8 @@ class PostController extends Controller
         $validated = $request->validated();
         $this->postRepository->update($post['id'], $validated);
         $request->session()->flash('confirm_edited', true);
-        return redirect("/posts/$id");
+
+        return redirect()->route('posts.show', ['post' => $id]);
     }
 
     /**
@@ -192,6 +193,6 @@ class PostController extends Controller
 
         $request->session()->flash('confirm_deleted', true);
 
-        return redirect('/posts');
+        return redirect()->route('posts.index');
     }
 }
