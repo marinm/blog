@@ -3,21 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentRequest;
-use App\Repositories\CommentRepository;
-use App\Models\Comment;
+use App\Interfaces\CommentRepositoryInterface;
 
 class CommentController extends Controller
 {
-    protected $commentRepository;
+    protected $comments;
 
     /**
      * Constructor
      *
      * @param  App\Repositories\CommentRepository $commentRepository
      */
-    public function __construct(CommentRepository $commentRepository)
+    public function __construct(CommentRepositoryInterface $comments)
     {
-        $this->commentRepository = $commentRepository;
+        $this->comments = $comments;
     }
 
     /**
@@ -39,12 +38,12 @@ class CommentController extends Controller
      * @param  int  $post_id
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreCommentRequest $request, $post_id)
+    public function store(StoreCommentRequest $request, $postId)
     {
-        $validated = $request->validated();
+        $newDetails = $request->validated();
 
-        $this->commentRepository->create($post_id, $validated);
+        $this->comments->createComment($postId, $newDetails);
 
-        return redirect()->route('posts.show', ['post' => $post_id]);
+        return redirect()->route('posts.show', ['post' => $postId]);
     }
 }
