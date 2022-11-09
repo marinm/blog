@@ -1,27 +1,15 @@
 # Laravel Blog
 
-**Note:** I am making incremental improvements to the code.
-
-For the original Wednesday submission, please see:
-
-```
-git checkout ec3b7a31
-```
-
-_...where "~~Tuesday~~ commmit" should say Wednesday instead._
-
-
 ## Development setup
 
 You will need:
 
 |          | Version I am using |
 |----------|--------------------|
-| php      | `8.1.10 (CLI)`     |
-| composer | `2.1.6`            |
 | docker   | `20.10.17`         |
 
-Download the code and dependencies:
+
+Download the code:
 
 ```
 $ git clone https://github.com/marinm/blog
@@ -34,24 +22,24 @@ Set the environment variables. The example values are OK for development.
 $ cp .env.example .env
 ```
 
-Install dependencies, including Laravel Sail.
+Install Sail and dependencies using a one-use container:
 
 ```
-$ composer install --dev
+sh composer-install.sh
 ```
-
-_Note: If you have other docker containers running at this time you may get localhost:port conflicts._
 
 Start up
 
 ```
-$ ./vendor/bin/sail up
+./vendor/bin/sail up
 ```
+
+_Note: If you have other docker containers running at this time you may get localhost:port conflicts._
 
 In a separate terminal, connect to the web host container to run commands:
 
 ```
-$ docker exec -it blog-laravel.test-1 /bin/bash
+docker exec -it blog-laravel.test-1 /bin/bash
 ```
 
 In the web host container:
@@ -59,15 +47,15 @@ In the web host container:
 Seed the database with some random demo values:
 
 ```
-# php artisan key:generate
-# php artisan migrate:fresh --seed
+php artisan key:generate
+php artisan migrate:fresh --seed
 ```
 
 Install node dependencies and start the asset loader (Vite):
 
 ```
-# npm install
-# npm run dev
+npm install
+npm run dev
 ```
 
 (Wait a few seconds for Vite to start up)
@@ -88,9 +76,14 @@ blog
 |   |   +-- Requests
 |   |       |-- StoreCommentRequest.php
 |   |       +-- StorePostRequest.php
+|   |-- Interfaces
+|   |   |-- CommentRepositoryInterface.php
+|   |   +-- PostRepositoryInterface.php
 |   |-- Models
 |   |   |-- Comment.php
 |   |   +-- Post.php
+|   |-- Providers
+|   |   +-- RepositoryServiceProvider.php
 |   +-- Repositories
 |       |-- CommentRepository.php
 |       +-- PostRepository.php
@@ -151,49 +144,21 @@ Print all routes and their controllers with:
 ![](/docs/screenshots/)
 
 
-### List all posts
+### Index
 
-| Widescreen| Mobile |
-|-|-|
-| ![List all posts](/docs/screenshots/widescreen-all-posts.png) | ![List all posts](/docs/screenshots/mobile-all-posts.png) |
-
-### Search results
-
-| Widescreen| Mobile |
-|-|-|
-| ![Search results](/docs/screenshots/widescreen-search-results.png) | ![Search results](/docs/screenshots/mobile-search-results.png) |
+![Show Newest Posts](/docs/screenshots/mobile/posts-index.png)
 
 
-### Post
+### Show
 
-| Widescreen| Mobile |
-|-|-|
-| ![Post](/docs/screenshots/widescreen-one-post-page.png) | ![Post](/docs/screenshots/mobile-one-post-page.png) |
+![Show A Post](/docs/screenshots/mobile/posts-show.png)
 
 
 ### Edit post
 
-| Widescreen| Mobile |
-|-|-|
-| ![Edit post](/docs/screenshots/widescreen-edit-post.png) | ![Edit post](/docs/screenshots/mobile-edit-post.png) |
+![Edit Post](/docs/screenshots/mobile/posts-edit.png)
 
 
-### Confirm post deleted
+### Create
 
-| Widescreen| Mobile |
-|-|-|
-| ![Confirm post deleted](/docs/screenshots/widescreen-confirm-post-deleted.png) | ![Confirm post deleted](/docs/screenshots/mobile-confirm-post-deleted.png) |
-
-
-### New post
-
-| Widescreen| Mobile |
-|-|-|
-| ![New post](/docs/screenshots/widescreen-new-post.png) | ![New post](/docs/screenshots/mobile-new-post.png) |
-
-
-### New post - Input error
-
-| Widescreen| Mobile |
-|-|-|
-| ![New post - Input error](/docs/screenshots/widescreen-new-post-input-error.png) | ![New post - Input error](/docs/screenshots/mobile-new-post-input-error.png) |
+![Create Post](/docs/screenshots/mobile/posts-create.png)
